@@ -1,0 +1,37 @@
+{
+  "name": "IBGE_Library",
+  "version": "1.0.0",
+  "description": "Extract values from library of IBGE",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "keywords": [
+    "ibge",
+    "extract",
+    "library"
+  ],
+  "author": "Rafael Arantes",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
+    "ejs": "^2.5.7",
+    "events": "^1.1.1",
+    "express": "^4.16.2",
+    "express-load": "^1.1.16",
+    "fs": "0.0.1-security",
+    "jsdom": "^11.6.0",
+    "mongodb": "^3.0.1",
+    "node-dom": "^0.1.0",
+    "opn": "^5.2.0",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "requestsync": "^0.2.1",
+    "vm": "^0.1.0"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/rafaelarantes/IBGE_Library"
+  }
+}
