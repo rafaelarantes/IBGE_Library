@@ -1,0 +1,49 @@
+{
+	"fotografia": {
+		"todos": "Todos os campos",
+		"titulo": "Titulo",
+		"autor": "Autor",
+		"serie": "Série",
+		"assunto": "Assunto",
+		"ano": "Ano"
+	},
+	"coleta": {
+		"todos": "Todos os campos",
+		"titulo": "Titulo",
+		"autor": "Autor",
+		"serie": "Série",
+		"assunto": "Assunto",
+		"ano": "Ano",
+		"editor": "Editor"
+	},
+	"livro": {
+		"todos": "Todos os campos",
+		"titulo": "Titulo",
+		"autor": "Autor",
+		"serie": "Série",
+		"assunto": "Assunto",
+		"ano": "Ano",
+		"editor": "Editor"
+	},
+	"mapa": {
+		"todos": "Todos os campos",
+		"titulo": "Titulo",
+		"autor": "Autor",
+		"serie": "Série",
+		"assunto": "Assunto",
+		"ano": "Ano",
+		"editor": "Editor",
+		"mi": "Mi",
+		"escala": "Escala",
+		"nomenclatura": "Nomenclatura"
+	},
+	"periodico": {
+		"todos": "Todos os campos",
+		"titulo": "Titulo",
+		"autor": "Autor",
+		"assunto": "Assunto",
+		"ano": "Ano",
+		"editor": "Editor"
+
+	}
+}

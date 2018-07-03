@@ -1,12 +1,13 @@
-var app = require('./config/Express')();
-var opn = require('opn');
+var app = require('./config/Config')();
+var open = require('open');
 var port = 3004;
+var url = "http://localhost:"+port;
 
 app.listen(port, function(){
 	console.log("\t================================");
 	console.log("\t========= IBGE Library =========");
 	console.log("\t================================\r\n");
-	console.log("======== Server running in port " + port + "\t=======");
-	console.log("======== Your default browser will open\t=======");
-	opn('http://localhost:'+port);
+	console.log("======== Server running in port " + port + "\t\t\t=======");
+	console.log("======== Open in your browser: "+ url +"\t=======");
+	open(url);
 });

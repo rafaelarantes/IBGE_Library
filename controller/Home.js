@@ -1,14 +1,14 @@
 var Extract = require('../core/Extract');
-var DAO = require('../config/DAO');
+var DAO = require('../database/DAO');
+var ControllerStatus = require('./ControllerStatus');
+var JsonFileParse = require('../config/JsonFileParse');
 
 module.exports = function(app) {
-	app.get('/', (req, res) =>{
-		res.render('index',{
-			success : false,
-			error: false,
-			message: "",
-			count: 0
-		});
+	var controllerStatus = new ControllerStatus();
+	var jsonFileParse = new JsonFileParse("FieldsDictionary.json");
+
+	app.get('/', (req, res) => {
+		res.render('index', controllerStatus.getStatusDefault());
 	});
 
 	app.get('/library', (req,res) => {
@@ -16,15 +16,11 @@ module.exports = function(app) {
 		let path = req.url.split("?");
 
 		if (path.length != 2) {
-			res.render('index',{
-				success : false,
-				error: true,
-				message: "Erro interno",
-				count: 0
-			});
+			res.render('index', controllerStatus.getStatusError(0, "Erro interno"));
 
 		} else {
 			console.log("======== Extracting data...\t\t=======");
+			res.render('index', controllerStatus.getStatusSuccess(0, "Ok"));
 			
 			var params = path[1];
 
@@ -90,7 +86,6 @@ module.exports = function(app) {
 						 
 					});
 			});
-
 		}
 	});
 }

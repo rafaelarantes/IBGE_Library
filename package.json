@@ -24,14 +24,14 @@
     "jsdom": "^11.6.0",
     "mongodb": "^3.0.1",
     "node-dom": "^0.1.0",
-    "opn": "^5.2.0",
+    "open": "0.0.5",
     "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "requestsync": "^0.2.1",
     "vm": "^0.1.0"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/rafaelarantes/IBGE_Library"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafaelarantes/IBGE_Library"
   }
 }
