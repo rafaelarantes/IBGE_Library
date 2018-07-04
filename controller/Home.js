@@ -1,26 +1,28 @@
 var Extract = require('../core/Extract');
 var DAO = require('../database/DAO');
-var ControllerStatus = require('./ControllerStatus');
+var ResponseStatus = require('./helper/ResponseStatus');
 var JsonFileParse = require('../config/JsonFileParse');
 
 module.exports = function(app) {
-	var controllerStatus = new ControllerStatus();
+	var responseStatus = new ResponseStatus();
 	var jsonFileParse = new JsonFileParse("FieldsDictionary.json");
 
 	app.get('/', (req, res) => {
-		res.render('index', controllerStatus.getStatusDefault());
+		let responseStatus = new ResponseStatus();
+		res.render('index', responseStatus.getStatus());
 	});
 
 	app.get('/library', (req,res) => {
 		let extract = new Extract();
 		let path = req.url.split("?");
-
+		let responseStatus = new ResponseStatus();
+		
 		if (path.length != 2) {
-			res.render('index', controllerStatus.getStatusError(0, "Erro interno"));
+			res.render('index', responseStatus.setStatusError(0, "Erro interno").getStatus());
 
 		} else {
 			console.log("======== Extracting data...\t\t=======");
-			res.render('index', controllerStatus.getStatusSuccess(0, "Ok"));
+			res.render('index', responseStatus.setStatusPending(0, "Extracting data").getStatus());
 			
 			var params = path[1];
 
