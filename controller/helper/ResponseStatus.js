@@ -1,14 +1,14 @@
 this.status;
 
 function ResponseStatus(){
-    setStatusDefault();
+    ResponseStatus.prototype.setStatusDefault();
 }
 
 ResponseStatus.prototype.setStatusDefault = () => {
     this.status = {
         success : false,
         error: false,
-        pending: false,
+        information: false,
         message: "",
         recordsAffected: 0,
         data : null
@@ -26,13 +26,13 @@ ResponseStatus.prototype.setStatusError = (recordsAffected, message, data = null
     
 }
 
-ResponseStatus.prototype.setStatusPending = (recordsAffected = 0, message, data = null) => {
+ResponseStatus.prototype.setStatusInformation = (recordsAffected = 0, message, data = null) => {
     setStatus(recordsAffected, message, data);
-    this.status.pending = true;
+    this.status.information = true;
 }
 
 function setStatus(recordsAffected, message, data){
-    setStatusDefault();
+    ResponseStatus.prototype.setStatusDefault();
     this.status.recordsAffected = recordsAffected;
     this.status.message = message;
     this.status.data = data;

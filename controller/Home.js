@@ -2,92 +2,86 @@ var Extract = require('../core/Extract');
 var DAO = require('../database/DAO');
 var ResponseStatus = require('./helper/ResponseStatus');
 var JsonFileParse = require('../config/JsonFileParse');
+var Logger = require('../log/Logger');
+var Detail = require('../core/Detail');
+this.log;
 
 module.exports = function(app) {
 	var responseStatus = new ResponseStatus();
-	var jsonFileParse = new JsonFileParse("FieldsDictionary.json");
+	var jsonFileParse = new JsonFileParse("FieldsDictionary");
+	this.log = Logger.getLogger();
 
 	app.get('/', (req, res) => {
 		let responseStatus = new ResponseStatus();
 		res.render('index', responseStatus.getStatus());
 	});
 
-	app.get('/library', (req,res) => {
+	app.get('/extract', (req,res) => {
 		let extract = new Extract();
 		let path = req.url.split("?");
 		let responseStatus = new ResponseStatus();
 		
 		if (path.length != 2) {
+			this.log.error("Invalid URL");
 			res.render('index', responseStatus.setStatusError(0, "Erro interno").getStatus());
-
 		} else {
-			console.log("======== Extracting data...\t\t=======");
-			res.render('index', responseStatus.setStatusPending(0, "Extracting data").getStatus());
-			
+			res.render('index', responseStatus.setStatusInformation(0, "Extraindo dados").getStatus());
 			var params = path[1];
 
 			extract.get(params).then((values) => {
-				var dao = new DAO();
-
-				console.log("======== Saving data...\t\t\t=======");
-
-				dao.save(values).then((countRegisters) => {
-					console.log("======== Recorded: "+countRegisters+"\t\t\t=======");
-					console.log("======== Finished!\t\t\t=======");
-
-					res.render('index',{
-						success : true,
-						error: false,
-						message: "Foram inseridos " + countRegisters + " registros com sucesso!",
-						count: countRegisters
-					});
-
-				}).catch((err) => {
-					let success = false;
-					let error = true;
-
-					if(err) {
-						if(err.toString().indexOf('[MSG-USER]') !== -1)
-						{
-							success = true;
-							error = false;
-							err = err.replace("[MSG-USER]", "");
-						}
-						else
-							console.log("======== " + err + "\t\t\t=======");
-					}
-
-					res.render('index',{
-						success : success,
-						error: error,
-						message: err,
-						count: 0
-					});
-				});
-
+				res.render('index', responseStatus.setStatusSuccess(values.length, "Extração realizada com sucesso", values).getStatus());
 			}).catch((err) => {
-					let success = false;
-					let error = true;
+				let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
 
-					if(err) {
-						if(err.toString().indexOf('[MSG-USER]') != -1)
-						{
-							success = true;
-							error = false;
-							err = err.replace("[MSG-USER]", "");
-						}
-						else
-							console.log("======== " + err + "\t\t\t=======");
-					}
+				if(err) {
+					if(typeof(err) == typeof(new Error))
+					this.log.error(err);
+					else
+						response = responseStatus.setStatusInformation(0, err).getStatus()
+				}
 
-					res.render('index',{
-						success : success,
-						error: error,
-						message: err,
-						count: 0
-						 
-					});
+				res.render('index', response);
 			});
 		}
+	});
+
+	app.get('/details', (req,res) => {
+		let urlParams = req.url.split("?");;
+		let detail = Detail();
+		detail.get(urlParams).then((json) => {
+			res.render('index', responseStatus.setStatusSuccess(1, "", json).getStatus());
+		}).catch((err) => {
+			let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
+			
+			if(err) {
+				if(typeof(err) == typeof(new Error))
+				this.log.error(err);
+				else
+					response = responseStatus.setStatusInformation(0, err).getStatus()
+			}
+
+			res.render('index', response);
+		});
+	});
+
+	app.post('/save', (req,res) => {
+		let values = req.body;
+		let dao = new DAO();
+
+		dao.save(values).then((recordsAffected) => {
+			res.render('index', responseStatus.setStatusSuccess(recordsAffected, "Finalizado").getStatus());
+
+		}).catch((err) => {
+			let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
+			
+			if(err) {
+				if(typeof(err) == typeof(new Error))
+				this.log.error(err);
+				else
+					response = responseStatus.setStatusInformation(0, err).getStatus()
+			}
+
+			res.render('index', response);
+		});
 	});
 }

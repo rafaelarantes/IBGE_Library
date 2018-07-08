@@ -1,7 +1,9 @@
 var Database = require('./Database');
+var Logger = require('../log/Logger');
+this.log; 
 
 function DAO(){
-
+	this.log = Logger.getLogger();
 }
 
 DAO.prototype.save = (values) => {
@@ -12,22 +14,21 @@ DAO.prototype.save = (values) => {
 		var defConnection = Promise.defer();
 		findUnsavedIds(dbo, values, ids, collectionName).then((valuesInsert) => {
 			if(valuesInsert.length > 0){
-				insertValues(dbo, valuesInsert, collectionName).then((countRegisters) => {
+				insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
 					defConnection.resolve();
-					defSave.resolve(countRegisters);
+					defSave.resolve(affectedRegisters);
 				}).catch((err) => {
-					defConnection.reject(err);
-					defSave.reject(err);
+					this.log.error(err);
+					defConnection.reject();
+					defSave.reject();
 				});
-			}
-			else
-			{
+			} else
 				defSave.resolve(valuesInsert.length);
-			}
 
 		}).catch((err) => {
-			defConnection.reject(err);
-			defSave.reject(err);
+			this.log.error(err);
+			defConnection.reject();
+			defSave.reject();
 		});
 
 		return defConnection.promise;
@@ -41,7 +42,8 @@ function insertValues(dbo, values, collectionName){
 
 	dbo.collection(collectionName).insert(values, (err) =>{
 		if(err){
-			defInsert.reject(err);
+			this.log.error(err);
+			defInsert.reject();
 		} else {
 			defInsert.resolve(values.length);
 		}
@@ -57,19 +59,18 @@ function findUnsavedIds(dbo, values, ids, collectionName){
 	dbo.collection(collectionName).find({_id: {$in: ids} }).toArray((err, docs) => {
 		  if(docs) {
               if (err) {
-                  defFind.reject(err);
+				this.log.error(err);
+                defFind.reject();
               } else {
-                  valuesInsert = values.filter((value) => {
-				  var idsDoc = getIds(docs);
-				  if (!idsDoc.includes(value._id)) {
-					  return value;
-				  }
+                valuesInsert = values.filter((value) => {
+					var idsDoc = getIds(docs);
+					if (!idsDoc.includes(value._id)) {
+						return value;
+				  	}
 
-              })
-                  ;
+              	});
               }
-          }
-          else
+          } else
           	valuesInsert = values;
 
 		  defFind.resolve(valuesInsert);

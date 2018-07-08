@@ -3,7 +3,7 @@ var JsonFileParse = require('../config/JsonFileParse');
 
 var Database = {
 	createConnection: (values, callback) => {
-			var jsonFileParse = new JsonFileParse("Database.json");
+			var jsonFileParse = new JsonFileParse("Database");
 			var url = jsonFileParse.getValue["mongoURL"];
 			var databaseName = jsonFileParse.getValue["databaseName"];
 			var collectionName = jsonFileParse.getValue["collectionName"];
