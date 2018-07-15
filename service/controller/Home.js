@@ -8,15 +8,22 @@ this.log;
 
 module.exports = function(app) {
 	var responseStatus = new ResponseStatus();
-	var jsonFileParse = new JsonFileParse("FieldsDictionary");
 	this.log = Logger.getLogger();
 
-	app.get('/', (req, res) => {
+	app.get('api/', (req, res) => {
 		let responseStatus = new ResponseStatus();
-		res.render('index', responseStatus.getStatus());
+		res.json(responseStatus.getStatus());
+		//res.render('index', responseStatus.getStatus());
 	});
 
-	app.get('/extract', (req,res) => {
+	app.get('/api/getFields', (req, res) => {
+		let jsonFileParse = new JsonFileParse();
+		jsonFileParse.openFile("FieldsDictionary").then(() => {
+			res.json(jsonFileParse.getValues());
+		});
+	});
+
+	app.get('api/extract', (req,res) => {
 		let extract = new Extract();
 		let path = req.url.split("?");
 		let responseStatus = new ResponseStatus();
@@ -45,7 +52,7 @@ module.exports = function(app) {
 		}
 	});
 
-	app.get('/details', (req,res) => {
+	app.get('api/details', (req,res) => {
 		let urlParams = req.url.split("?");;
 		let detail = Detail();
 		detail.get(urlParams).then((json) => {
@@ -64,7 +71,7 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('/save', (req,res) => {
+	app.post('api/save', (req,res) => {
 		let values = req.body;
 		let dao = new DAO();
 

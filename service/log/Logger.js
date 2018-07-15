@@ -11,7 +11,7 @@ function Configure(){
     log4js.configure({
         appenders: {
         out:{ type: 'console' },
-        app:{ type: 'file', filename: './files/error.log' }
+        app:{ type: 'file', filename: './log/files/error.log' }
         },
         categories: {
         default: { appenders: [ 'out', 'app' ], level: 'debug' }
