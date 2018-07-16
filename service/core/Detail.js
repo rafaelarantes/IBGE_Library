@@ -10,43 +10,41 @@ function Detail() {
 }
 
 function get(urlParams){
-    var defGetDetails = Promise.defer();
     let request = new Request();
-    request.get(this.urlIBGE+urlParams).then(($) => {
-        if($("div[id='detalhes']")) {
-            $("div[id='detalhes']").children().children().each(function(i, elem){
-                if($(this).text() != ''){
-                    values.push($(this).text());
-                }
-            });
+    return new Promise((resolve, reject) => {
+        request.get(this.urlIBGE+urlParams).then(($) => {
+            if($("div[id='detalhes']")) {
+                $("div[id='detalhes']").children().children().each(function(i, elem){
+                    if($(this).text() != ''){
+                        values.push($(this).text());
+                    }
+                });
 
-            var json = {};
-            
-            for(let i=0; i < values.length; i+=2) {
-                if(values[i].toUpperCase().trim().replace(":","") == "ID")
-                {
-                    json["_id"] = values[i+1];
+                var json = {};
+                
+                for(let i=0; i < values.length; i+=2) {
+                    if(values[i].toUpperCase().trim().replace(":","") == "ID")
+                    {
+                        json["_id"] = values[i+1];
+                    }
+                    else{
+                        json[formatField(values[i])] = {
+                            "originalName" : values[i],
+                            "value" : values[i+1]
+                        };
+                    }
                 }
-                else{
-                    json[formatField(values[i])] = {
-                        "originalName" : values[i],
-                        "value" : values[i+1]
-                    };
-                }
-            }
 
-            defGetDetails.resolve(json)
-        }else{
-            defGetDetails.reject("Não há detalhes disponíveis")
-        }
-
-    }).catch((err) => {
-        if(err)
-            this.log.error(err);
-        defGetDetails.reject();
+                resolve(json);
+            }else
+                reject("Não há detalhes disponíveis");
+                
+        }).catch((err) => {
+            if(err)
+                this.log.error(err);
+            defGetDetails.reject();
+        });
     });
-
-    return defGetDetails.promise;
 }
 
 function formatField(text)

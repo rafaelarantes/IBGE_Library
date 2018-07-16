@@ -7,76 +7,68 @@ function DAO(){
 }
 
 DAO.prototype.save = (values) => {
-	var defSave = Promise.defer();
 	var ids = getIds(values);
 	
-	Database.createConnection(values, (dbo, collectionName) => {
-		var defConnection = Promise.defer();
-		findUnsavedIds(dbo, values, ids, collectionName).then((valuesInsert) => {
-			if(valuesInsert.length > 0){
-				insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
-					defConnection.resolve();
-					defSave.resolve(affectedRegisters);
-				}).catch((err) => {
-					this.log.error(err);
-					defConnection.reject();
-					defSave.reject();
-				});
-			} else
-				defSave.resolve(valuesInsert.length);
+	return new Promise((resolve, reject) => {
+		Database.createConnection(values, (dbo, collectionName) => {
+			findUnsavedIds(dbo, values, ids, collectionName).then((valuesInsert) => {
+				if(valuesInsert.length > 0){
+					insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
+						resolve(affectedRegisters);
+					}).catch((err) => {
+						this.log.error(err);
+						reject();
+					});
+				} else
+				resolve(valuesInsert.length);
 
-		}).catch((err) => {
-			this.log.error(err);
-			defConnection.reject();
-			defSave.reject();
+			}).catch((err) => {
+				this.log.error(err);
+				reject();
+			});
 		});
-
-		return defConnection.promise;
 	});
 	
-	return defSave.promise;
 }
 
 function insertValues(dbo, values, collectionName){
-	var defInsert = Promise.defer();
-
-	dbo.collection(collectionName).insert(values, (err) =>{
-		if(err){
-			this.log.error(err);
-			defInsert.reject();
-		} else {
-			defInsert.resolve(values.length);
-		}
+	return new Promise((resolve, reject) => {
+		dbo.collection(collectionName).insert(values, (err) =>{
+			if(err){
+				this.log.error(err);
+				reject();
+			} else {
+				resolve(values.length);
+			}
+		});
 	});
-
-	return defInsert.promise;
 }
 
 function findUnsavedIds(dbo, values, ids, collectionName){
 	var defFind = Promise.defer();
 	var valuesInsert = [];
 
-	dbo.collection(collectionName).find({_id: {$in: ids} }).toArray((err, docs) => {
-		  if(docs) {
-              if (err) {
-				this.log.error(err);
-                defFind.reject();
-              } else {
-                valuesInsert = values.filter((value) => {
-					var idsDoc = getIds(docs);
-					if (!idsDoc.includes(value._id)) {
-						return value;
-				  	}
+	return new Promise((resolve, reject) => {
+		dbo.collection(collectionName).find({_id: {$in: ids} }).toArray((err, docs) => {
+			if(docs) {
+				if (err) {
+					this.log.error(err);
+					reject();
+				} else {
+					valuesInsert = values.filter((value) => {
+						var idsDoc = getIds(docs);
+						if (!idsDoc.includes(value._id)) {
+							return value;
+						}
 
-              	});
-              }
-          } else
-          	valuesInsert = values;
+					});
+				}
+			} else
+				valuesInsert = values;
 
-		  defFind.resolve(valuesInsert);
-	})
-
-	return defFind.promise;
+			resolve(valuesInsert);
+		});
+	});
 }
 
 function getIds(values){
