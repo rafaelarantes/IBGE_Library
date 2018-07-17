@@ -17,9 +17,6 @@ export default {
 
 <style>
 #app {
-  position: absolute;
-  top: 150px;
-  left:50%;
-  transform: translate(-50%,-50%);
+
 }
 </style>

@@ -1,23 +1,28 @@
 <template>
     <div id="home">
-        <form class="form-search">
-            <div class="form-group">
-                <select class="form-control" name="choiceMaterial" v-model="selected.searchChoiceMaterial" >
-                    <option v-for="(value, key, index) in searchChoiceFields" :value="key" >{{value[0].name}}</option> 
-                </select>
-            </div>
-            <div class="form-group"> 
-                <select class="form-control" name="choiceField" v-model="selected.searchChoiceField">
-                    <option v-for="(value, key, index) in searchChoiceFields[selected.searchChoiceMaterial] ? searchChoiceFields[selected.searchChoiceMaterial][1] : {}" >{{value}}</option> 
-                </select>
-            </div>
-            <div class="form-group">
-                <input type="text" class="form-control" id="searchText" v-model="selected.searchText" placeholder="Faça sua busca">
-            </div>
-            <div class="form-group">
-                <button type="button" class="btn btn-info btn-lg btn-block" v-on:click="search">Buscar</button>
-            </div>
-        </form>
+        <div class="div-logo">
+            <img class="img-logo" src="http://www.newsrondonia.com.br/imagensNoticias/image/ibge(1).png"/>
+        </div>
+        <div>
+            <form class="form-search">
+                <div class="form-group">
+                    <select class="form-control" name="choiceMaterial" v-model="selected.searchChoiceMaterial" >
+                        <option v-for="(value, key, index) in searchChoiceFields" :value="key" >{{value[0].name}}</option> 
+                    </select>
+                </div>
+                <div class="form-group"> 
+                    <select class="form-control" name="choiceField" v-model="selected.searchChoiceField">
+                        <option v-for="(value, key, index) in searchChoiceFields[selected.searchChoiceMaterial] ? searchChoiceFields[selected.searchChoiceMaterial][1] : {}" >{{value}}</option> 
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" id="searchText" v-model="selected.searchText" placeholder="Faça sua busca">
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-info btn-lg btn-block" v-on:click="search">Buscar</button>
+                </div>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -26,7 +31,7 @@ import SearchChoiceField from '../../service/SearchChoiceField'
 import Search from '../../service/Search'
 
 export default {
-  data()	{	return	{	searchChoiceFields:	{}, selected: { searchChoiceMaterial:"todos", searchChoiceField: null, searchText: "" } } 	},
+  data()	{	return	{	searchChoiceFields:	{}, selected: { searchChoiceMaterial:"todos", searchChoiceField: "todos", searchText: "" } } 	},
   methods: {
     getSearchChoicefield: function() {
       SearchChoiceField.getAll().then((resp) => {
@@ -52,10 +57,25 @@ export default {
 
 <style>
 .form-search {
-    max-width: 600px;
+    min-width: 250px;
+    width: 30%;
     transform: translate(-50%,-50%);
     left:50%;
+    position: absolute;
+}
+.div-logo {
+    margin-bottom: 130px;
+    width: 100%;
+    height: auto;
+    text-align: center;
+    
+}
+.img-logo {
+    width: 50%;
+    height: auto;
     position: relative;
+    max-width: 400px;
+    min-width: 200px;
 }
 </style>
 
