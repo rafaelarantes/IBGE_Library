@@ -1,60 +1,59 @@
 <template>
-  <div id="app" class="container">
-    {{ fields }}
-    
+  <div id="app">
+    <div class="form-group">
+      <select class="form-control" name="choiceMaterial" v-model="selected.searchChoiceMaterial" >
+      <option v-for="(value, key, index) in searchChoiceFields" :value="key" >{{value[0].name}}</option> 
+      </select>
+    </div>
+    <div class="form-group"> 
+      <select class="form-control" name="choiceField" v-model="selected.searchChoiceField">
+        <option v-for="(value, key, index) in searchChoiceFields[selected.searchChoiceMaterial] ? searchChoiceFields[selected.searchChoiceMaterial][1] : {}" >{{value}}</option> 
+      </select>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" id="searchText" v-model="selected.searchText" placeholder="Faça sua busca">
+    </div>
+    <div class="form-group">
+      <button type="button" class="btn btn-info btn-lg btn-block" v-on:click="search">Buscar</button>
+    </div>
   </div>
 </template>
 
 <script>
-import Field from './service/Field'
+import SearchChoiceField from './service/SearchChoiceField'
+import Search from './service/Search'
 
 export default {
   name: 'app',
-  data () {
-    return {
-      fields: {} 
+  data()	{	return	{	searchChoiceFields:	{}, selected: { searchChoiceMaterial:"todos", searchChoiceField: null, searchText: "" } } 	},
+  methods: {
+    getSearchChoicefield: function() {
+      SearchChoiceField.getAll().then((resp) => {
+          this.searchChoiceFields = resp.data;
+      }, (err) => {
+          console.log(err.statusText);
+      });
+    },
+    search: function() {
+      //this.selected
+      Search.get().then((resp) => {
+
+      }, (err) => {
+          console.log(err.statusText);
+      });
     }
   },
-  methods:{
-        getFields: () => {
-            Field.getAll().then((resp) => {
-                this.fields = resp.data;
-            }, (err) => {
-                console.log(err.statusText);
-            });
-        }
-  },
   mounted: function () {
-        this.getFields();
+    this.getSearchChoicefield();
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-
-h1, h2 {
-  font-weight: normal;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
+  position: absolute;
+  top: 30%;
+  left:50%;
+  transform: translate(-50%,-50%);
 }
 </style>
