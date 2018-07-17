@@ -16,14 +16,14 @@ module.exports = function(app) {
 		//res.render('index', responseStatus.getStatus());
 	});
 
-	app.get('/api/getFields', (req, res) => {
+	app.get('/api/SearchChoiceField/get', (req, res) => {
 		let jsonFileParse = new JsonFileParse();
 		jsonFileParse.openFile("FieldsDictionary").then(() => {
 			res.json(jsonFileParse.getValues());
 		});
 	});
 
-	app.get('api/extract', (req,res) => {
+	app.get('api/SearchExtract/get', (req,res) => {
 		let extract = new Extract();
 		let path = req.url.split("?");
 		let responseStatus = new ResponseStatus();
