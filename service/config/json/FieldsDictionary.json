@@ -1,13 +1,30 @@
 {
-	"fotografia": {
+	"todos" : [
+		{
+		"name": "Todos os materiais"
+		},
+		{
+			"todos": "Todos os campos"
+		}
+	],
+	"fotografia": [
+	  {
+		"name": "Fotografia"
+	  },
+	  {
 		"todos": "Todos os campos",
 		"titulo": "Titulo",
 		"autor": "Autor",
 		"serie": "Série",
 		"assunto": "Assunto",
 		"ano": "Ano"
-	},
-	"coleta": {
+	  }
+	],
+	"coleta": [
+	  {
+		"name": "Coleta"
+	  },
+	  {
 		"todos": "Todos os campos",
 		"titulo": "Titulo",
 		"autor": "Autor",
@@ -15,8 +32,13 @@
 		"assunto": "Assunto",
 		"ano": "Ano",
 		"editor": "Editor"
-	},
-	"livro": {
+	  }
+	],
+	"livro": [
+	  {
+		"name": "Livro"
+	  },
+	  {
 		"todos": "Todos os campos",
 		"titulo": "Titulo",
 		"autor": "Autor",
@@ -24,8 +46,13 @@
 		"assunto": "Assunto",
 		"ano": "Ano",
 		"editor": "Editor"
-	},
-	"mapa": {
+	  }
+	],
+	"mapa": [
+	  {
+		"name": "Mapa"
+	  },
+	  {
 		"todos": "Todos os campos",
 		"titulo": "Titulo",
 		"autor": "Autor",
@@ -36,14 +63,19 @@
 		"mi": "Mi",
 		"escala": "Escala",
 		"nomenclatura": "Nomenclatura"
-	},
-	"periodico": {
+	  }
+	],
+	"periodico": [
+	  {
+		"name": "Periódio"
+	  },
+	  {
 		"todos": "Todos os campos",
 		"titulo": "Titulo",
 		"autor": "Autor",
 		"assunto": "Assunto",
 		"ano": "Ano",
 		"editor": "Editor"
-
-	}
-}
+	  }
+	]
+  }
