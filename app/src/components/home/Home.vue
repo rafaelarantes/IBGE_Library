@@ -1,7 +1,7 @@
 <template>
     <div id="home">
         <div class="div-logo">
-            <img class="img-logo" src="http://www.newsrondonia.com.br/imagensNoticias/image/ibge(1).png"/>
+            <img class="img-logo" src="../../assets/images/logo.png"/>
         </div>
         <div>
             <form class="form-search">
