@@ -1,50 +1,65 @@
 var Request = require('./Request');
 var Request = require('../config/JsonFileParse');
 var Logger = require('../log/Logger');
-this.log;
+var log, urlIBGE;
 
-function Detail() {
-    var jsonFileParse = new JsonFileParse("IBGE");
-    this.urlIBGE = jsonFileParse.getValue("url");
-    this.log = Logger.getLogger();
+function Detail() {  
+    log = Logger.getLogger();
 }
 
-function get(urlParams){
+Detail.prototype.get = (urlParams) => {
     let request = new Request();
     return new Promise((resolve, reject) => {
-        request.get(this.urlIBGE+urlParams).then(($) => {
-            if($("div[id='detalhes']")) {
-                $("div[id='detalhes']").children().children().each(function(i, elem){
-                    if($(this).text() != ''){
-                        values.push($(this).text());
-                    }
-                });
+        getURL().then(() => {
+            request.get(urlIBGE+urlParams).then(($) => {
+                if($("div[id='detalhes']")) {
+                    $("div[id='detalhes']").children().children().each(function(i, elem){
+                        if($(this).text() != ''){
+                            values.push($(this).text());
+                        }
+                    });
 
-                var json = {};
-                
-                for(let i=0; i < values.length; i+=2) {
-                    if(values[i].toUpperCase().trim().replace(":","") == "ID")
-                    {
-                        json["_id"] = values[i+1];
+                    var json = {};
+                    
+                    for(let i=0; i < values.length; i+=2) {
+                        if(values[i].toUpperCase().trim().replace(":","") == "ID")
+                        {
+                            json["_id"] = values[i+1];
+                        }
+                        else{
+                            json[formatField(values[i])] = {
+                                "originalName" : values[i],
+                                "value" : values[i+1]
+                            };
+                        }
                     }
-                    else{
-                        json[formatField(values[i])] = {
-                            "originalName" : values[i],
-                            "value" : values[i+1]
-                        };
-                    }
-                }
 
-                resolve(json);
-            }else
-                reject("Não há detalhes disponíveis");
-                
+                    resolve(json);
+                }else
+                    reject("Não há detalhes disponíveis");
+                    
+            }).catch((err) => {
+                if(err)
+                    log.error(err);
+                    reject();
+            });
         }).catch((err) => {
-            if(err)
-                this.log.error(err);
-            defGetDetails.reject();
+            log.error(err);
+            reject()
         });
     });
+}
+
+function getURL(){
+    var jsonFileParse = new JsonFileParse();
+    return new Promise((resolve, reject) => {
+            jsonFileParse.openFile("IBGE").then(() => {
+            urlIBGE = jsonFileParse.getValue("url");
+            resolve();
+        }).catch((err) => {
+            reject(err);
+        });
+    })
 }
 
 function formatField(text)

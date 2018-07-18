@@ -1,9 +1,9 @@
 var Database = require('./Database');
 var Logger = require('../log/Logger');
-this.log; 
+var log; 
 
 function DAO(){
-	this.log = Logger.getLogger();
+	log = Logger.getLogger();
 }
 
 DAO.prototype.save = (values) => {
@@ -16,14 +16,14 @@ DAO.prototype.save = (values) => {
 					insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
 						resolve(affectedRegisters);
 					}).catch((err) => {
-						this.log.error(err);
+						log.error(err);
 						reject();
 					});
 				} else
 				resolve(valuesInsert.length);
 
 			}).catch((err) => {
-				this.log.error(err);
+				log.error(err);
 				reject();
 			});
 		});

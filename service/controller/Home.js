@@ -4,11 +4,11 @@ var ResponseStatus = require('./helper/ResponseStatus');
 var JsonFileParse = require('../config/JsonFileParse');
 var Logger = require('../log/Logger');
 var Detail = require('../core/Detail');
-this.log;
+var log;
 
 module.exports = function(app) {
 	var responseStatus = new ResponseStatus();
-	this.log = Logger.getLogger();
+	log = Logger.getLogger();
 
 	app.get('api/', (req, res) => {
 		let responseStatus = new ResponseStatus();
@@ -17,42 +17,45 @@ module.exports = function(app) {
 	});
 
 	app.get('/api/SearchChoiceField/get', (req, res) => {
+		let responseStatus = new ResponseStatus();
 		let jsonFileParse = new JsonFileParse();
 		jsonFileParse.openFile("FieldsDictionary").then(() => {
-			res.json(jsonFileParse.getValues());
+			responseStatus.setStatusSuccess(jsonFileParse.getValues());
+			res.json(responseStatus.getStatus());
 		});
 	});
 
-	app.get('api/SearchExtract/get', (req,res) => {
-		let extract = new Extract();
-		let path = req.url.split("?");
+	app.get('/api/SearchExtract/get', (req,res) => {
 		let responseStatus = new ResponseStatus();
+		let path = req.url.split("?");
 		
 		if (path.length != 2) {
-			this.log.error("Invalid URL");
-			res.render('index', responseStatus.setStatusError(0, "Erro interno").getStatus());
+			log.error("Invalid URL - Length of path is different of two");
+			responseStatus.setStatusError(0, "Erro interno");
 		} else {
-			res.render('index', responseStatus.setStatusInformation(0, "Extraindo dados").getStatus());
+			let extract = new Extract();
 			var params = path[1];
 
 			extract.get(params).then((values) => {
-				res.render('index', responseStatus.setStatusSuccess(values.length, "Extração realizada com sucesso", values).getStatus());
+				responseStatus.setStatusSuccess(values, values.length)
 			}).catch((err) => {
-				let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
+				responseStatus.setStatusError(0, "Erro interno");
 
 				if(err) {
 					if(typeof(err) == typeof(new Error))
-					this.log.error(err);
+						log.error(err);
 					else
-						response = responseStatus.setStatusInformation(0, err).getStatus()
+						responseStatus.setStatusInformation(0, err);
 				}
-
-				res.render('index', response);
 			});
 		}
+		
+
+
+		res.json(responseStatus.getStatus());
 	});
 
-	app.get('api/details', (req,res) => {
+	app.get('/api/details', (req,res) => {
 		let urlParams = req.url.split("?");;
 		let detail = Detail();
 		detail.get(urlParams).then((json) => {
@@ -62,7 +65,7 @@ module.exports = function(app) {
 			
 			if(err) {
 				if(typeof(err) == typeof(new Error))
-				this.log.error(err);
+					log.error(err);
 				else
 					response = responseStatus.setStatusInformation(0, err).getStatus()
 			}
@@ -71,7 +74,7 @@ module.exports = function(app) {
 		});
 	});
 
-	app.post('api/save', (req,res) => {
+	app.post('/api/save', (req,res) => {
 		let values = req.body;
 		let dao = new DAO();
 
@@ -83,7 +86,7 @@ module.exports = function(app) {
 			
 			if(err) {
 				if(typeof(err) == typeof(new Error))
-				this.log.error(err);
+					scope.log.error(err);
 				else
 					response = responseStatus.setStatusInformation(0, err).getStatus()
 			}

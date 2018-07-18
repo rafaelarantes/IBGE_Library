@@ -1,18 +1,16 @@
 var fs = require('fs');
-this.text;
-this.file;
-var scope = this;
+var text, file;
 
 function JsonFileParse(){}
 
 JsonFileParse.prototype.openFile = (jsonFile) => {
-    scope.file = jsonFile;
+    file = jsonFile;
 
-    if(scope.file){
+    if(file){
         return new Promise((resolve, reject) => {
-            fs.readFile(`config/json/${scope.file}.json`, 'utf8', (err, data) => {
+            fs.readFile(`config/json/${file}.json`, 'utf8', (err, data) => {
                 if (err) reject(err);
-                scope.data = JSON.parse(data);
+                data = JSON.parse(data);
                 resolve();
             });
         }); 
@@ -20,11 +18,11 @@ JsonFileParse.prototype.openFile = (jsonFile) => {
 }
 
 JsonFileParse.prototype.getValue = (attributeName) => {
-    return scope.data[attributeName];
+    return data[attributeName];
 }
 
 JsonFileParse.prototype.getValues = () => {
-    return scope.data;
+    return data;
 }
 
 module.exports = JsonFileParse;

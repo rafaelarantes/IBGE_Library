@@ -1,11 +1,11 @@
-this.status;
+var status;
 
 function ResponseStatus(){
     ResponseStatus.prototype.setStatusDefault();
 }
 
 ResponseStatus.prototype.setStatusDefault = () => {
-    this.status = {
+    status = {
         success : false,
         error: false,
         information: false,
@@ -15,31 +15,31 @@ ResponseStatus.prototype.setStatusDefault = () => {
     };
 }
 
-ResponseStatus.prototype.setStatusSuccess = (recordsAffected = 0, message = "", data = null) => {
+ResponseStatus.prototype.setStatusSuccess = (data, recordsAffected = 0, message = "") => {
     setStatus(recordsAffected, message, data);
-    this.status.success = true;
+    status.success = true;
 }
 
 ResponseStatus.prototype.setStatusError = (recordsAffected, message, data = null) => {
     setStatus(recordsAffected, message, data);
-    this.status.error = true;
+    status.error = true;
     
 }
 
 ResponseStatus.prototype.setStatusInformation = (recordsAffected = 0, message, data = null) => {
     setStatus(recordsAffected, message, data);
-    this.status.information = true;
+    status.information = true;
 }
 
 function setStatus(recordsAffected, message, data){
     ResponseStatus.prototype.setStatusDefault();
-    this.status.recordsAffected = recordsAffected;
-    this.status.message = message;
-    this.status.data = data;
+    status.recordsAffected = recordsAffected;
+    status.message = message;
+    status.data = data;
 }
 
 ResponseStatus.prototype.getStatus = () => {
-    return this.status;
+    return status;
 }
 
 
