@@ -1,12 +1,13 @@
 var request = require('request');
 var Logger = require('../log/Logger');
+var cheerio = require('cheerio');
 var log;
 
 function Request(){
     log = Logger.getLogger();
 }
 
-function get(url){
+Request.prototype.get = (url) => {
 	return new Promise((resolve, reject) => {
 		request(url, function(error, response, html){
 			if(error){
@@ -19,3 +20,5 @@ function get(url){
 		});
 	});
 }
+
+module.exports = Request;

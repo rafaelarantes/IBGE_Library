@@ -1,5 +1,4 @@
 var Request = require('./Request');
-var cheerio = require('cheerio');
 var requestSync = require('requestsync');
 var Logger = require('../log/Logger');
 var JsonFileParse = require('../config/JsonFileParse');
@@ -10,7 +9,8 @@ function Extract(){
 	
 }
 
-Extract.prototype.get = (params) => {
+Extract.prototype.get = (searchExtractParams) => {
+	params = `acervo=${searchExtractParams.material}&campo=${searchExtractParams.field}&notqry=&opeqry=&texto=${searchExtractParams.text}&digital=false&fraseexata=`
 	let request = new Request();
 	return new Promise((resolve, reject) => { 
 			getURL().then(() => {
@@ -18,19 +18,17 @@ Extract.prototype.get = (params) => {
 					filterData($).then((urls) => {
 						resolve(urls);
 					}).catch((err) => {
-						if(typeof(err) != typeof(new Error))
+						if(typeof(err) == typeof(new Error))
 						{
 							log.error(err);
 							reject();
 						}
 						else
-						{
 							reject(err);
-						}
 					});
 			
 				}).catch((err) => {
-					if(typeof(err) != typeof(new Error))
+					if(typeof(err) == typeof(new Error))
 					{
 						log.error(err);
 						reject();
@@ -48,6 +46,7 @@ Extract.prototype.get = (params) => {
 function filterData($){
 	var urls = [];
 	return new Promise((resolve,reject) => {
+		
 		if($('tbody').length == 0){
 			reject('Nenhuma informação encontrada');
 		} else {
@@ -70,7 +69,7 @@ function filterData($){
 function getURL(){
     var jsonFileParse = new JsonFileParse();
     return new Promise((resolve, reject) => {
-            jsonFileParse.openFile("IBGE").then(() => {
+        jsonFileParse.openFile("IBGE").then(() => {
             urlIBGE = jsonFileParse.getValue("url");
             resolve();
         }).catch((err) => {

@@ -26,34 +26,30 @@ module.exports = function(app) {
 	});
 
 	app.get('/api/SearchExtract/get', (req,res) => {
-		//"?acervo=" + material + "&campo=" + field + "&notqry=&opeqry=&texto=" + textoBusca + "&digital=false&fraseexata="
-		let responseStatus = new ResponseStatus();
-		let path = req.url.split("?");
-		
-		if (path.length != 2) {
-			log.error("Invalid URL - Length of path is different of two");
+		var responseStatus = new ResponseStatus();
+		let searchExtractParams = {
+			material: req.query.material,
+			field: req.query.field,
+			text: req.query.text
+		 };
+
+		 let extract = new Extract();
+
+		extract.get(searchExtractParams).then((values) => {
+			responseStatus.setStatusSuccess(values, values.length)
+			res.json(responseStatus.getStatus());
+		}).catch((err) => {
 			responseStatus.setStatusError(0, "Erro interno");
-		} else {
-			let extract = new Extract();
-			var params = path[1];
 
-			extract.get(params).then((values) => {
-				responseStatus.setStatusSuccess(values, values.length)
-			}).catch((err) => {
-				responseStatus.setStatusError(0, "Erro interno");
+			if(err) {
+				if(typeof(err) == typeof(new Error))
+					log.error(err);
+				else
+					responseStatus.setStatusInformation(0, err);
+			}
 
-				if(err) {
-					if(typeof(err) == typeof(new Error))
-						log.error(err);
-					else
-						responseStatus.setStatusInformation(0, err);
-				}
-			});
-		}
-		
-
-
-		res.json(responseStatus.getStatus());
+			res.json(responseStatus.getStatus());
+		});
 	});
 
 	app.get('/api/details', (req,res) => {

@@ -1,5 +1,5 @@
 var fs = require('fs');
-var text, file;
+var text, file, value;
 
 function JsonFileParse(){}
 
@@ -10,7 +10,7 @@ JsonFileParse.prototype.openFile = (jsonFile) => {
         return new Promise((resolve, reject) => {
             fs.readFile(`config/json/${file}.json`, 'utf8', (err, data) => {
                 if (err) reject(err);
-                data = JSON.parse(data);
+                value = JSON.parse(data);
                 resolve();
             });
         }); 
@@ -18,11 +18,11 @@ JsonFileParse.prototype.openFile = (jsonFile) => {
 }
 
 JsonFileParse.prototype.getValue = (attributeName) => {
-    return data[attributeName];
+    return value[attributeName];
 }
 
 JsonFileParse.prototype.getValues = () => {
-    return data;
+    return value;
 }
 
 module.exports = JsonFileParse;
