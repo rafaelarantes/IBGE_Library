@@ -26,6 +26,7 @@ module.exports = function(app) {
 	});
 
 	app.get('/api/SearchExtract/get', (req,res) => {
+		//"?acervo=" + material + "&campo=" + field + "&notqry=&opeqry=&texto=" + textoBusca + "&digital=false&fraseexata="
 		let responseStatus = new ResponseStatus();
 		let path = req.url.split("?");
 		
@@ -86,7 +87,7 @@ module.exports = function(app) {
 			
 			if(err) {
 				if(typeof(err) == typeof(new Error))
-					scope.log.error(err);
+					log.error(err);
 				else
 					response = responseStatus.setStatusInformation(0, err).getStatus()
 			}

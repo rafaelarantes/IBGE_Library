@@ -53,7 +53,7 @@ export default {
                 searchText: ""
             },
             tableResult: {
-                items: {},
+                items: items,
                 currentPage: 1,
                 perPage: 10
             }
