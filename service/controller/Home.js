@@ -10,12 +10,6 @@ module.exports = function(app) {
 	var responseStatus = new ResponseStatus();
 	log = Logger.getLogger();
 
-	app.get('api/', (req, res) => {
-		let responseStatus = new ResponseStatus();
-		res.json(responseStatus.getStatus());
-		//res.render('index', responseStatus.getStatus());
-	});
-
 	app.get('/api/SearchChoiceField/get', (req, res) => {
 		let responseStatus = new ResponseStatus();
 		let jsonFileParse = new JsonFileParse();
@@ -52,10 +46,11 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/api/details', (req,res) => {
-		let urlParams = req.url.split("?");;
+	app.get('/api/SearchDetail/:id', (req,res) => {
+		let id = req.params.id;
 		let detail = Detail();
-		detail.get(urlParams).then((json) => {
+
+		detail.get(id).then((json) => {
 			res.render('index', responseStatus.setStatusSuccess(1, "", json).getStatus());
 		}).catch((err) => {
 			let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
