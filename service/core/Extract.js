@@ -44,26 +44,47 @@ Extract.prototype.get = (searchExtractParams) => {
 }
 
 function filterData($){
-	var urls = [];
+	var publications = [];
+
 	return new Promise((resolve,reject) => {
 		
 		if($('tbody').length == 0){
 			reject('Nenhuma informação encontrada');
 		} else {
+
 			$('tbody').filter(function() {
 				$(this).children().each(function(i, elem) {
-					let urlLink = $(this).children().children().attr('href');
-					urlLink = urlLink.split("?");
-					
-					if(urlLink.length > 0){
-						urls.push(urlLink[1]);
-					}
+					var publication = {
+						_id: 0,
+						url: "",
+						title: "",
+						author: "",
+						year: "",
+					};
+
+					publication.url = getLinkPublication($(this));
+					publication.title = $(this).children().eq(0).text();
+					publication.author = $(this).children().eq(1).text();
+					publication.year = $(this).children().eq(2).text();
+					publication._id = $(this).children().eq(3).text();
+					publications.push(publication);
+
 				});
 
-				resolve(urls);
+				resolve(publications);
 			});
 		}
 	});
+}
+
+function getLinkPublication(pageObject){
+	let linkPublication = pageObject.children().children().attr('href');
+	linkPublication = linkPublication.split("?");
+	
+	if(linkPublication.length > 0){
+		return linkPublication[1];
+	}
+	return "";
 }
 
 function getURL(){
