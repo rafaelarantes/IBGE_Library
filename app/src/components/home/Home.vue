@@ -6,17 +6,17 @@
         <div>
             <form class="form-search">
                 <div class="form-group">
-                    <select class="form-control" name="choiceMaterial" v-model="selected.searchChoiceMaterial" >
+                    <select class="form-control" name="choiceMaterial" v-model="selected.material" >
                         <option v-for="(value, key, index) in searchChoiceFields" :value="key" >{{value[0].name}}</option> 
                     </select>
                 </div>
                 <div class="form-group"> 
-                    <select class="form-control" name="choiceField" v-model="selected.searchChoiceField">
-                        <option v-for="(value, key, index) in searchChoiceFields[selected.searchChoiceMaterial] ? searchChoiceFields[selected.searchChoiceMaterial][1] : {}" >{{value}}</option> 
+                    <select class="form-control" name="choiceField" v-model="selected.field">
+                        <option v-for="(value, key, index) in searchChoiceFields[selected.material] ? searchChoiceFields[selected.material][1] : {}" :value="key" >{{value}}</option> 
                     </select>
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" id="searchText" v-model="selected.searchText" placeholder="Faça sua busca">
+                    <input type="text" class="form-control" id="searchText" v-model="selected.text" placeholder="Faça sua busca">
                 </div>
                 <div class="form-group">
                     <button type="button" class="btn btn-info btn-lg btn-block" v-on:click="search">Buscar</button>
@@ -24,39 +24,62 @@
             </form>
         </div>
         <div class="div-search-result" v-show="tableResult.items.length > 0">
-            <b-table class="table-search-result" responsive striped hover :items="tableResult.items" :fields="tableResult.fields" :current-page="tableResult.currentPage" :per-page="tableResult.perPage"></b-table>
+            <b-table class="table-search-result" responsive striped fixed hover :items="tableResult.items" :fields="fieldsTable"  :current-page="tableResult.currentPage" :per-page="tableResult.perPage">
+                    <template slot="show_details" slot-scope="row">
+                        <b-button v-on:click="details()" size="sm" @click.stop="row.toggleDetails" class="mr-2">
+                            {{ row.detailsShowing ? 'Esconder' : 'Mostrar'}} Detalhes
+                        </b-button>
+                    </template>
+                    <template slot="row-details" slot-scope="item"> 
+                        <b-card>
+                            <b-row class="mb-2" v-for="(value, key, index) in detailsRowTable(item._id)">
+                                <b-col sm="3" class="text-sm-right">
+                                    <b>{{ value }}</b>
+                                </b-col>
+                                <b-col>
+                                    {{ value }}
+                                </b-col>
+                            </b-row>
+                        </b-card>
+                    </template>
+            </b-table>
             <b-pagination :total-rows="tableResult.items.length" :per-page="tableResult.perPage" v-model="tableResult.currentPage" />
         </div>
     </div>
 </template>
 
 <script>
-import SearchChoiceField from '../../service/SearchChoiceField'
-import Search from '../../service/Search'
-const items = [
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-
-]
-
+import SearchChoiceField from '../../service/SearchChoiceField';
+import Search from '../../service/Search';
+import SearchDetail from '../../service/SearchDetail';
+const items = [];
 export default {
     data()	{
         return	{	
             searchChoiceFields: {},
             selected: {
                 searchChoiceMaterial:"todos",
-                searchChoiceField: "todos",
-                searchText: ""
+                field: "todos",
+                text: ""
             },
             tableResult: {
                 items: items,
                 currentPage: 1,
                 perPage: 10
-            }
+            },
+            fieldsTable: [{
+                key: "title",
+                label: "Título"
+            },{
+                key: "author",
+                label: "Autor"
+            },{
+                key: "year",
+                label: "Ano"
+            },{
+                key: "show_details",
+                label: "Detalhes"
+            }]
         }
     },
     methods: {
@@ -68,11 +91,15 @@ export default {
             });
         },
         search: function() {
-        //this.selected
-            Search.get().then((resp) => {
+            Search.get(this.selected).then((resp) => {
                 this.tableResult.items = resp.data.data;
             }, (err) => {
                 console.log(err.statusText);
+            });
+        },
+        detailsRowTable: function(id) {
+            SearchDetail.get(id).then((resp) => {
+                return resp.data.data;
             });
         }
     },
