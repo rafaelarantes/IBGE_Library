@@ -30,8 +30,22 @@ module.exports = function(app) {
 		 let extract = new Extract();
 
 		extract.get(searchExtractParams).then((values) => {
-			responseStatus.setStatusSuccess(values, values.length)
-			res.json(responseStatus.getStatus());
+			let dao = new DAO();
+			dao.getUnsavedIds(values).then((valuesUnsaved) => {
+				responseStatus.setStatusSuccess(valuesUnsaved, valuesUnsaved.length);
+				res.json(responseStatus.getStatus());
+			}).catch((err) => {
+				responseStatus.setStatusError(0, "Erro interno");
+				if(err) {
+					if(typeof(err) == typeof(new Error))
+						log.error(err);
+					else
+						responseStatus.setStatusInformation(0, err);
+				}
+	
+				res.json(responseStatus.getStatus());
+			});
+
 		}).catch((err) => {
 			responseStatus.setStatusError(0, "Erro interno");
 
@@ -51,8 +65,8 @@ module.exports = function(app) {
 		let detail = new Detail();
 		var responseStatus = new ResponseStatus();
 		detail.get(id).then((json) => {
-			responseStatus.setStatusSuccess(json, json.length)
-			res.json(responseStatus.getStatus())
+			responseStatus.setStatusSuccess(json, json.length);
+			res.json(responseStatus.getStatus());
 		}).catch((err) => {
 			if(err) {
 				if(typeof(err) == typeof(new Error)){
@@ -60,30 +74,31 @@ module.exports = function(app) {
 					responseStatus.setStatusError(0, "Erro interno");
 				}
 				else
-					responseStatus.setStatusInformation(0, err)
+					responseStatus.setStatusInformation(0, err);
 			}
 			res.json(responseStatus.getStatus());
 		});
 	});
 
-	app.post('/api/save', (req,res) => {
+	app.post('/api/Publication/post', (req,res) => {
 		let values = req.body;
 		let dao = new DAO();
+		var responseStatus = new ResponseStatus();
 
 		dao.save(values).then((recordsAffected) => {
+			responseStatus.setStatusSuccess(null, recordsAffected);
 			res.render('index', responseStatus.setStatusSuccess(recordsAffected, "Finalizado").getStatus());
 
 		}).catch((err) => {
-			let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
-			
 			if(err) {
-				if(typeof(err) == typeof(new Error))
+				if(typeof(err) == typeof(new Error)){
 					log.error(err);
+					responseStatus.setStatusError(0, "Erro interno");
+				}
 				else
-					response = responseStatus.setStatusInformation(0, err).getStatus()
+					responseStatus.setStatusInformation(0, err);
 			}
-
-			res.render('index', response);
+			res.json(responseStatus.getStatus());
 		});
 	});
 }

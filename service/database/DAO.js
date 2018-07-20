@@ -7,28 +7,38 @@ function DAO(){
 }
 
 DAO.prototype.save = (values) => {
-	var ids = getIds(values);
-	
 	return new Promise((resolve, reject) => {
-		Database.createConnection(values, (dbo, collectionName) => {
-			findUnsavedIds(dbo, values, ids, collectionName).then((valuesInsert) => {
-				if(valuesInsert.length > 0){
-					insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
-						resolve(affectedRegisters);
-					}).catch((err) => {
-						log.error(err);
-						reject();
-					});
-				} else
+		DAO.prototype.getUnsavedIds(values).then((valuesUnsaved) => {
+			if(valuesUnsaved.length > 0){
+				insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
+					resolve(affectedRegisters);
+				}).catch((err) => {
+					log.error(err);
+					reject();
+				});
+			} else
 				resolve(valuesInsert.length);
 
+		}).catch((err) => {
+			log.error(err);
+			reject();
+		});
+	});
+	
+}
+
+DAO.prototype.getUnsavedIds = (values) => {
+	var ids = getIds(values);
+	return new Promise((resolve, reject) => {
+		Database.createConnection(values, (dbo, collectionName) => {
+			findUnsavedIds(dbo, values, ids, collectionName).then((valuesUnsaved) => {
+				resolve(valuesUnsaved);
 			}).catch((err) => {
 				log.error(err);
 				reject();
 			});
 		});
 	});
-	
 }
 
 function insertValues(dbo, values, collectionName){

@@ -49,6 +49,7 @@
 import SearchChoiceField from '../../service/SearchChoiceField';
 import Search from '../../service/Search';
 import SearchDetail from '../../service/SearchDetail';
+import Publication from '../../service/Publication';
 const items = [];
 export default {
     data()	{
@@ -123,6 +124,13 @@ export default {
                 return [];
         },
         postPublication(item){
+            if(item){
+                Publication.post(item).then((resp) => {
+                    console.log("Salvo com sucesso!");
+                }, (err) => {
+                    console.log(err.statusText);
+                });
+            }
             
         }
     },
