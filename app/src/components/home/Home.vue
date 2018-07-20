@@ -26,19 +26,16 @@
         <div class="div-search-result" v-show="tableResult.items.length > 0">
             <b-table class="table-search-result" responsive striped fixed hover :items="tableResult.items" :fields="fieldsTable"  :current-page="tableResult.currentPage" :per-page="tableResult.perPage">
                     <template slot="show_details" slot-scope="row">
-                        <b-button v-on:click="details()" size="sm" @click.stop="row.toggleDetails" class="mr-2">
+                        <b-button size="sm" variant="success" v-on:click="postPublication(row.item)">Adicionar</b-button>
+                        <b-button size="sm" @click.stop="row.toggleDetails" v-on:click="getDetailsRowTable(row.item._id)" class="mr-2">
                             {{ row.detailsShowing ? 'Esconder' : 'Mostrar'}} Detalhes
                         </b-button>
                     </template>
                     <template slot="row-details" slot-scope="item"> 
                         <b-card>
-                            <b-row class="mb-2" v-for="(value, key, index) in detailsRowTable(item._id)">
-                                <b-col sm="3" class="text-sm-right">
-                                    <b>{{ value }}</b>
-                                </b-col>
-                                <b-col>
-                                    {{ value }}
-                                </b-col>
+                            <b-row class="mb-2" v-for="(value, key, index) in getElementDetailPublication(item.item._id)[0]">
+                                <b-col sm="3" class="text-sm-right"><b>{{ value.originalName }}</b></b-col>
+                                <b-col>{{ value.value }}</b-col>
                             </b-row>
                         </b-card>
                     </template>
@@ -67,6 +64,10 @@ export default {
                 currentPage: 1,
                 perPage: 10
             },
+            detailPublication: {
+                current: {},
+                list: []
+            },
             fieldsTable: [{
                 key: "title",
                 label: "Título"
@@ -78,7 +79,7 @@ export default {
                 label: "Ano"
             },{
                 key: "show_details",
-                label: "Detalhes"
+                label: "Opções"
             }]
         }
     },
@@ -97,10 +98,32 @@ export default {
                 console.log(err.statusText);
             });
         },
-        detailsRowTable: function(id) {
-            SearchDetail.get(id).then((resp) => {
-                return resp.data.data;
-            });
+        getDetailsRowTable: function(id) {
+            let currentDetail = this.getElementDetailPublication(id);
+
+            if(currentDetail.length > 0){
+                return currentDetail[0];
+            }else{
+                var scope = this;
+                scope.detailPublication.current = {};
+                SearchDetail.get(id).then((resp) => {
+                    scope.detailPublication.list.push(resp.data.data);
+                    return resp.data.data;
+                }, (err) => {
+                    console.log(err.statusText);
+                });
+            }
+        },
+        getElementDetailPublication(id){
+            if(this.detailPublication.list.length  > 0){
+                return this.detailPublication.list.filter(function(elem,i,array) {
+                    return elem._id == id;
+                });
+            }else
+                return [];
+        },
+        postPublication(item){
+            
         }
     },
     mounted: function () {

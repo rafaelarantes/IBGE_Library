@@ -62,11 +62,12 @@ function filterData($){
 						year: "",
 					};
 
-					publication.url = getLinkPublication($(this));
+					let url = getLinkPublication($(this));
+					publication.url = url;
 					publication.title = $(this).children().eq(0).text();
 					publication.author = $(this).children().eq(1).text();
 					publication.year = $(this).children().eq(2).text();
-					publication._id = $(this).children().eq(3).text();
+					publication._id = url && url.split("id=").length > 0 ? url.split("id=")[1] : "0";
 					publications.push(publication);
 
 				});

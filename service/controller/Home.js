@@ -46,23 +46,23 @@ module.exports = function(app) {
 		});
 	});
 
-	app.get('/api/SearchDetail/:id', (req,res) => {
+	app.get('/api/SearchDetail/get/:id', (req,res) => {
 		let id = req.params.id;
-		let detail = Detail();
-
+		let detail = new Detail();
+		var responseStatus = new ResponseStatus();
 		detail.get(id).then((json) => {
-			res.render('index', responseStatus.setStatusSuccess(1, "", json).getStatus());
+			responseStatus.setStatusSuccess(json, json.length)
+			res.json(responseStatus.getStatus())
 		}).catch((err) => {
-			let response = responseStatus.setStatusError(0, "Erro interno").getStatus()
-			
 			if(err) {
-				if(typeof(err) == typeof(new Error))
+				if(typeof(err) == typeof(new Error)){
 					log.error(err);
+					responseStatus.setStatusError(0, "Erro interno");
+				}
 				else
-					response = responseStatus.setStatusInformation(0, err).getStatus()
+					responseStatus.setStatusInformation(0, err)
 			}
-
-			res.render('index', response);
+			res.json(responseStatus.getStatus());
 		});
 	});
 

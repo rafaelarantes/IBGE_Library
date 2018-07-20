@@ -1,5 +1,5 @@
 var Request = require('./Request');
-var Request = require('../config/JsonFileParse');
+var JsonFileParse = require('../config/JsonFileParse');
 var Logger = require('../log/Logger');
 var log, urlIBGE;
 
@@ -7,11 +7,13 @@ function Detail() {
     log = Logger.getLogger();
 }
 
-Detail.prototype.get = (urlParams) => {
+Detail.prototype.get = (id) => {
+    var urlParams = "view=detalhes&id="+id;
     let request = new Request();
     return new Promise((resolve, reject) => {
         getURL().then(() => {
             request.get(urlIBGE+urlParams).then(($) => {
+                var values = [];
                 if($("div[id='detalhes']")) {
                     $("div[id='detalhes']").children().children().each(function(i, elem){
                         if($(this).text() != ''){
@@ -24,7 +26,7 @@ Detail.prototype.get = (urlParams) => {
                     for(let i=0; i < values.length; i+=2) {
                         if(values[i].toUpperCase().trim().replace(":","") == "ID")
                         {
-                            json["_id"] = values[i+1];
+                            json["_id"] = id;
                         }
                         else{
                             json[formatField(values[i])] = {
@@ -33,7 +35,6 @@ Detail.prototype.get = (urlParams) => {
                             };
                         }
                     }
-
                     resolve(json);
                 }else
                     reject("Não há detalhes disponíveis");
@@ -53,13 +54,13 @@ Detail.prototype.get = (urlParams) => {
 function getURL(){
     var jsonFileParse = new JsonFileParse();
     return new Promise((resolve, reject) => {
-            jsonFileParse.openFile("IBGE").then(() => {
+        jsonFileParse.openFile("IBGE").then(() => {
             urlIBGE = jsonFileParse.getValue("url");
             resolve();
         }).catch((err) => {
             reject(err);
         });
-    })
+    });
 }
 
 function formatField(text)
