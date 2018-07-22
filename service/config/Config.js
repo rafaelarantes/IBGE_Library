@@ -4,10 +4,7 @@ var bodyParser = require('body-parser');
 
 module.exports = function() {
 	var app = express();
-	//app.set('view engine', 'ejs');
-	//app.set('views', './views');
 	app.use(bodyParser.urlencoded({extended: true}));
-	//app.use(express.static('./views/public'));
 	app.use(bodyParser.json());
 
 	app.use(function(req, res, next) {

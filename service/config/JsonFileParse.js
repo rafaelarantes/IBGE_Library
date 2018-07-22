@@ -5,11 +5,12 @@ function JsonFileParse(){}
 
 JsonFileParse.prototype.openFile = (jsonFile) => {
     file = jsonFile;
-
     if(file){
         return new Promise((resolve, reject) => {
             fs.readFile(`config/json/${file}.json`, 'utf8', (err, data) => {
-                if (err) reject(err);
+                if (err){
+                    reject(err);
+                } 
                 value = JSON.parse(data);
                 resolve();
             });

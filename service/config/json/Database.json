@@ -1,5 +1,5 @@
 {
-	"mongoURL" : "mongodb://localhost:27017/",
+	"mongoURL" : "mongodb+srv://ibge:1BG3_L1B23@cluster0-pyfjf.mongodb.net/test?retryWrites=true",
 	"databaseName" : "IBGE",
 	"collectionName" : "Library"
 }

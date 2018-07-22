@@ -27,7 +27,7 @@ module.exports = function(app) {
 			text: req.query.text
 		 };
 
-		 let extract = new Extract();
+		let extract = new Extract();
 
 		extract.get(searchExtractParams).then((values) => {
 			let dao = new DAO();
@@ -86,8 +86,8 @@ module.exports = function(app) {
 		var responseStatus = new ResponseStatus();
 
 		dao.save(values).then((recordsAffected) => {
-			responseStatus.setStatusSuccess(null, recordsAffected);
-			res.render('index', responseStatus.setStatusSuccess(recordsAffected, "Finalizado").getStatus());
+			responseStatus.setStatusSuccess(null, recordsAffected, "Inserido com sucesso!");
+			res.json(responseStatus.getStatus());
 
 		}).catch((err) => {
 			if(err) {

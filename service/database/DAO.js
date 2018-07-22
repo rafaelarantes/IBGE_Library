@@ -10,14 +10,14 @@ DAO.prototype.save = (values) => {
 	return new Promise((resolve, reject) => {
 		DAO.prototype.getUnsavedIds(values).then((valuesUnsaved) => {
 			if(valuesUnsaved.length > 0){
-				insertValues(dbo, valuesInsert, collectionName).then((affectedRegisters) => {
+				insertValues(valuesUnsaved).then((affectedRegisters) => {
 					resolve(affectedRegisters);
 				}).catch((err) => {
 					log.error(err);
 					reject();
 				});
 			} else
-				resolve(valuesInsert.length);
+				reject("O valor já havido sido inserido");
 
 		}).catch((err) => {
 			log.error(err);
@@ -28,36 +28,53 @@ DAO.prototype.save = (values) => {
 }
 
 DAO.prototype.getUnsavedIds = (values) => {
+	if(!values.length)
+		values = [values];
+	
 	var ids = getIds(values);
-	return new Promise((resolve, reject) => {
-		Database.createConnection(values, (dbo, collectionName) => {
-			findUnsavedIds(dbo, values, ids, collectionName).then((valuesUnsaved) => {
-				resolve(valuesUnsaved);
-			}).catch((err) => {
-				log.error(err);
-				reject();
+	return new Promise((resolveGet, rejectGet) => {
+		Database.createConnection((dbo, collectionName) => {
+			return new Promise((resolveFind, rejectFind) => {
+				findUnsavedIds(dbo, values, ids, collectionName).then((valuesUnsaved) => {
+					resolveGet(valuesUnsaved);
+					resolveFind(valuesUnsaved)
+				}).catch((err) => {
+					log.error(err);
+					rejectGet();
+					rejectFind();
+				});
 			});
+
 		});
 	});
 }
 
-function insertValues(dbo, values, collectionName){
-	return new Promise((resolve, reject) => {
-		dbo.collection(collectionName).insert(values, (err) =>{
-			if(err){
-				this.log.error(err);
-				reject();
-			} else {
-				resolve(values.length);
-			}
-		});
+
+
+function insertValues(values){
+	return new Promise((resolveInsert, rejectInsert) => {
+		Database.createConnection((dbo, collectionName) => {
+			return new Promise((resolveConnection, rejectConnection) => {
+				dbo.collection(collectionName).insert(values, (err) =>{
+					if(err){
+						this.log.error(err);
+						console.log(err);
+						rejectConnection()
+						rejectInsert();
+					} else {
+						resolveConnection(values);
+						resolveInsert(values.length);
+					}
+				});
+
+			});
+
+		});			
 	});
 }
 
 function findUnsavedIds(dbo, values, ids, collectionName){
-	var defFind = Promise.defer();
-	var valuesInsert = [];
-
+	var unsavedValues = [];
 	return new Promise((resolve, reject) => {
 		dbo.collection(collectionName).find({_id: {$in: ids} }).toArray((err, docs) => {
 			if(docs) {
@@ -65,7 +82,7 @@ function findUnsavedIds(dbo, values, ids, collectionName){
 					this.log.error(err);
 					reject();
 				} else {
-					valuesInsert = values.filter((value) => {
+					unsavedValues = values.filter((value) => {
 						var idsDoc = getIds(docs);
 						if (!idsDoc.includes(value._id)) {
 							return value;
@@ -74,18 +91,17 @@ function findUnsavedIds(dbo, values, ids, collectionName){
 					});
 				}
 			} else
-				valuesInsert = values;
+				unsavedValues = values;
 
-			resolve(valuesInsert);
+			resolve(unsavedValues);
 		});
 	});
 }
 
 function getIds(values){
 	var ids = [];
-
 	for(let v of values){
-		ids.push(v._id);
+			ids.push(v._id);
 	}
 
 	return ids;

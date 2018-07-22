@@ -2,14 +2,14 @@ var MongoClient = require('mongodb').MongoClient;
 var JsonFileParse = require('../config/JsonFileParse');
 
 var Database = {
-	createConnection: (values, callback) => {
+	createConnection: (callback) => {
 			var jsonFileParse = new JsonFileParse();
 			jsonFileParse.openFile("Database").then(() => {
-				var url = jsonFileParse.getValue["mongoURL"];
-				var databaseName = jsonFileParse.getValue["databaseName"];
-				var collectionName = jsonFileParse.getValue["collectionName"];
+				var url = jsonFileParse.getValue("mongoURL");
+				var databaseName = jsonFileParse.getValue("databaseName");
+				var collectionName = jsonFileParse.getValue("collectionName");
 
-				MongoClient.connect(url, (err, db) => {
+				MongoClient.connect(url, { useNewUrlParser: true }, (err, db) => {
 						if (err) throw err;
 
 						dbo = db.db(databaseName)
