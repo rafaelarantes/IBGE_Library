@@ -35,6 +35,16 @@ Detail.prototype.get = (id) => {
                             };
                         }
                     }
+                    if(!json._id){
+                        json = {
+                            "_id": id,
+                            "unavailable": {
+                                "originalName" : "Não disponível",
+                                "value" : "Tente outro conteúdo"
+                            }
+                        }
+                    }
+
                     resolve(json);
                 }else
                     reject("Não há detalhes disponíveis");

@@ -4,7 +4,7 @@
             <img class="img-logo" src="../../assets/images/logo.png"/>
         </div>
         <div>
-            <form class="form-search">
+            <form class="form-search" v-on:submit.prevent="search">
                 <div class="form-group">
                     <select class="form-control" name="choiceMaterial" v-model="selected.material" >
                         <option v-for="(value, key, index) in searchChoiceFields" :value="key" >{{value[0].name}}</option> 
@@ -59,7 +59,10 @@ import SearchChoiceField from '../../service/SearchChoiceField';
 import Search from '../../service/Search';
 import SearchDetail from '../../service/SearchDetail';
 import Publication from '../../service/Publication';
-export default {
+
+var self = this;
+
+export default {   
     data()	{
         return	{	
             searchChoiceFields: {},
@@ -101,52 +104,64 @@ export default {
     },
     methods: {
         getSearchChoicefield: function() {
-            this.modalProgressShow = true;
+            self.modalProgressShow = true;
             
             SearchChoiceField.getAll().then((resp) => {
-                this.setStatusResponse(resp.data);
-                this.searchChoiceFields = resp.data.data;
-                this.modalProgressShow = false;
+                self.setStatusResponse(resp.data);
+                self.searchChoiceFields = resp.data.data;
+                self.modalProgressShow = false;
             }, (err) => {
                 console.log(err.statusText);
-                this.modalProgressShow = false;
+                self.modalProgressShow = false;
             });
         },
         search: function() {
-            this.modalProgressShow = true;
+            self.modalProgressShow = true;
             
-            Search.get(this.selected).then((resp) => {
-                this.setStatusResponse(resp.data);
-                this.tableResult.items = resp.data.data;
-                this.modalProgressShow = false;
+            Search.get(self.selected).then((resp) => {
+                self.setStatusResponse(resp.data);
+                self.tableResult.items = resp.data.data;
+                self.modalProgressShow = false;
             }, (err) => {
                 console.log(err.statusText);
-                this.modalProgressShow = false;
+                self.modalProgressShow = false;
             });
         },
         getDetailsRowTable: function(id) {
-            let currentDetail = this.getElementDetailPublication(id);
+            return new Promise((resolve, reject) => {
+                let currentDetail = self.getElementDetailPublication(id);
 
-            if(currentDetail && currentDetail.length > 0){
-                return currentDetail[0];
-            }else{
-                var scope = this;
-                scope.detailPublication.current = {};
-                scope.modalProgressShow = true;
+                if(currentDetail && currentDetail.length > 0){
+                    resolve(currentDetail[0]);
+                }else{
+                    self.getDetail(id).then((data) => {
+                        return resolve(data);
+                    }, (err) => {
+                        console.log(err.statusText);
+                    });
+                }
+            });
+
+        },
+        getDetail: function(id){
+            return new Promise((resolve, reject) => {
+                self.detailPublication.current = {};
+                self.modalProgressShow = true;
                 SearchDetail.get(id).then((resp) => {
-                    scope.detailPublication.list.push(resp.data.data);
-                    scope.setStatusResponse(resp.data);
-                    scope.modalProgressShow = false;
-                    return resp.data.data;
+                    self.detailPublication.list.push(resp.data.data);
+                    self.setStatusResponse(resp.data);
+                    self.modalProgressShow = false;
+                    resolve(resp.data.data);
                 }, (err) => {
                     console.log(err.statusText);
-                    scope.modalProgressShow = false;
+                    self.modalProgressShow = false;
+                    reject();
                 });
-            }
+            });
         },
         getElementDetailPublication(id){
-            if(this.detailPublication.list && this.detailPublication.list.length && this.detailPublication.list.length  > 0){
-                return this.detailPublication.list.filter(function(elem,i,array) {
+            if(self.detailPublication.list && self.detailPublication.list.length && self.detailPublication.list.length  > 0){
+                return self.detailPublication.list.filter(function(elem,i,array) {
                     return elem._id == id;
                 });
             }else
@@ -154,40 +169,44 @@ export default {
         },
         postPublication(item){
             if(item){
-                this.modalProgressShow = true;
-                Publication.post(item).then((resp) => {
-                    this.setStatusResponse(resp.data);
-                    if(this.response.success){
-                        this.tableResult.items = this.tableResult.items.filter(function(elem,i,array) {
-                            return elem._id != item._id;
-                        });
-                    }
-                    this.modalProgressShow = false;
-                }, (err) => {
-                    console.log(err.statusText);
-                    this.modalProgressShow = false;
+                self.modalProgressShow = true;
+
+                self.getDetailsRowTable(item._id).then((currentItem) => {
+                    Publication.post(currentItem).then((resp) => {
+                        self.setStatusResponse(resp.data);
+                        if(self.response.success){
+                            self.tableResult.items = self.tableResult.items.filter(function(elem,i,array) {
+                                return elem._id != item._id;
+                            });
+                        }
+
+                        window.scrollTo(0, 0);
+                        self.modalProgressShow = false;
+                    }, (err) => {
+                        console.log(err.statusText);
+                        self.modalProgressShow = false;
+                    });
                 });
             }
             
         },
         setStatusResponse(resp){
             if(resp.message){
-                this.response.message = resp.message;
-                this.response.success = resp.success;
-                this.response.error = resp.error;
-                this.response.information = resp.information;
+                self.response.message = resp.message;
+                self.response.success = resp.success;
+                self.response.error = resp.error;
+                self.response.information = resp.information;
             }else{
-                this.response.message = false;
-                this.response.success = false;
-                this.response.error = false;
-                this.response.information = false;
+                self.response.message = false;
+                self.response.success = false;
+                self.response.error = false;
+                self.response.information = false;
             }
-            console.log(this.response);
-
         }
     },
     mounted: function () {
-        this.getSearchChoicefield();
+        self = this;
+        self.getSearchChoicefield();
     }
 }
 </script>
