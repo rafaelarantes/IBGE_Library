@@ -2,7 +2,7 @@
 
 > Front-End
 
-## Build Setup
+## Execution
 
 ``` bash
 # install dependencies
