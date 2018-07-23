@@ -9,7 +9,7 @@
 npm install
 
 # serve with hot reload at localhost:3004
-node app
+node main
 
 ```
 
