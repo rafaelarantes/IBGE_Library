@@ -1,5 +1,4 @@
 var app = require('./config/Config')();
-var open = require('open');
 var port = 3004;
 var url = "http://localhost:"+port;
 
@@ -9,5 +8,4 @@ app.listen(port, function(){
 	console.log("\t================================\r\n");
 	console.log("======== Server running in port " + port + "\t\t\t=======");
 	console.log("======== Open in your browser: "+ url +"\t=======");
-	open(url);
 });
