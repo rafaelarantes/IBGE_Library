@@ -3,8 +3,8 @@
 This project do data scraping of website (https://biblioteca.ibge.gov.br/index.php/biblioteca-catalogo) and the results can be recorded in database.
 
 Developed in:
-[Node.js](https://nodejs.org/) v6.10.0 
-[MongoDB](https://www.mongodb.com/) v3.6
+[Node.js](https://nodejs.org/) v6.10.0, 
+[MongoDB](https://www.mongodb.com/) v3.6 and
 [VueJS] (https://vuejs.org/) 2.9.6
 
 ### The architecture
