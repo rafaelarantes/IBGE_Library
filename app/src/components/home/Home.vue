@@ -31,10 +31,14 @@
         <div class="div-search-result" v-show="tableResult.items && tableResult.items.length && tableResult.items.length > 0">
             <b-table class="table-search-result" responsive striped fixed hover :items="tableResult.items" :fields="fieldsTable"  :current-page="tableResult.currentPage" :per-page="tableResult.perPage">
                     <template slot="show_details" slot-scope="row">
-                        <b-button size="sm" variant="success" v-on:click="postPublication(row.item)">Adicionar</b-button>
-                        <b-button size="sm" @click.stop="row.toggleDetails" v-on:click="getDetailsRowTable(row.item._id)" class="mr-2">
-                            {{ row.detailsShowing ? 'Esconder' : 'Mostrar'}} Detalhes
-                        </b-button>
+                        <div class="options-result">
+                            <b-button size="sm" variant="success" v-on:click="postPublication(row.item)"><custom-icon name="plus" base-class="custom-icon"></custom-icon></b-button>
+                            <b-button size="sm" @click.stop="row.toggleDetails" v-on:click="getDetailsRowTable(row.item._id)" class="mr-2">
+                                <custom-icon v-show="row.detailsShowing" name="zoom-out" base-class="custom-icon"></custom-icon>
+                                <custom-icon v-show="!row.detailsShowing" name="zoom-in" base-class="custom-icon"></custom-icon>
+                            </b-button>
+                        </div>
+
                     </template>
                     <template slot="row-details" slot-scope="item"> 
                         <b-card>
@@ -59,12 +63,17 @@ import SearchChoiceField from '../../service/SearchChoiceField';
 import Search from '../../service/Search';
 import SearchDetail from '../../service/SearchDetail';
 import Publication from '../../service/Publication';
+import customIcon from 'vue-icon/lib/vue-feather.esm';
 
 var self = this;
 
-export default {   
+export default {
+    components: {
+        customIcon
+    },
     data()	{
         return	{	
+            baseClass: 'v-icon',
             searchChoiceFields: {},
             modalProgressShow: false,
             response: {
@@ -212,6 +221,66 @@ export default {
 </script>
 
 <style>
+@media (min-width: 991px) {
+    .img-logo {
+        width: 50%;
+        height: auto;
+        position: relative;
+        max-width: 400px;
+        min-width: 200px;
+    }
+
+    .form-search {
+        min-width: 410px;
+        width: 30%;
+        transform: translate(-50%,-50%);
+        left:50%;
+        position: absolute;
+    }
+
+    .response-message {
+        margin-top: 260px;
+        text-align: center;
+        position: relative;
+        
+    }
+
+    .options-result {
+        display: flex;
+        justify-content: space-around;
+        padding: 0% 25% 0% 25%;
+    }
+}
+
+@media (max-width: 990px) {
+    .img-logo {
+        width: 60%;
+        height: auto;
+        position: relative;
+        max-width: 700px;
+        min-width: 400px;
+    }
+
+    .form-search {
+        min-width: 410px;
+        width: 60%;
+        transform: translate(-50%,-50%);
+        left:50%;
+        position: absolute;
+    }
+
+    .response-message {
+        margin-top: 260px;
+        text-align: center;
+        position: relative;
+        
+    }
+
+    .options-result {
+        display: flex;
+        justify-content: space-around;
+    }
+}
 .div-logo {
     margin-bottom: 130px;
     width: 100%;
@@ -219,29 +288,15 @@ export default {
     text-align: center;
     
 }
-.img-logo {
-    width: 50%;
-    height: auto;
-    position: relative;
-    max-width: 400px;
-    min-width: 200px;
-}
-.form-search {
-    min-width: 205px;
-    width: 30%;
-    transform: translate(-50%,-50%);
-    left:50%;
-    position: absolute;
-}
+
 .table-search-result {
     position: relative;
 }
-.response-message {
-    margin-top: 260px;
-    text-align: center;
-    position: relative;
-    
-}
+
+.v-icon,
+    .custom-icon {
+        width: 18px;
+    }
 </style>
 
 
